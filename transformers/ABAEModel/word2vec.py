@@ -23,4 +23,4 @@ def main(domain):
 
 print ('Pre-training word embeddings ...')
 main('2014-2015')
-# main('beer')
+# main('restaurant')

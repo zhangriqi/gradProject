@@ -80,7 +80,7 @@ def preprocess(domain):
     preprocess_test(domain)
 
 
-cleanData('2014-2015')
+# cleanData('2014-2015')
 print ('Preprocessing raw review sentences ...')
 preprocess('2014-2015')
-# preprocess('beer')
+# preprocess('restaurant')
