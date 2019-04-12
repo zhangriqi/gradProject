@@ -66,8 +66,6 @@ class Teacher(object):
 	def filter_single_asps(self, single_asps, multi_asps):
 		return [(sing_asp, count) for sing_asp, count in single_asps if not any([sing_asp in mult_asp for mult_asp, _ in multi_asps])]
 
-
-
 	def aspect_summary(self, aspect):
 		OPIN_THRESH = 0.75
 		HARD_MIN_OPIN_THRESH = 0.6
@@ -86,6 +84,7 @@ class Teacher(object):
 		aspect_sents = self.get_sents_by_aspect(aspect)
 
 		for sent in aspect_sents:
+			print('from teacher.py: ', sent)
 
 			if len(sent.tokenized) > SENTENCE_LEN_THRESHOLD:
 				continue #filter really long sentences

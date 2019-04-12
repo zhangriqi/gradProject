@@ -1,15 +1,20 @@
-import nltk
 import numpy as np
 from stanfordcorenlp import StanfordCoreNLP
 
+import sys
+sys.path.append('/Users/zhangruiqi/Downloads/test/gradProject/transformers')
+
 from transformers.tokenizers import MyTokenizer
 from transformers.asp_extractors import SentenceAspectExtractor
+from transformers.asp_extractors import ABAEAspectExtractor
 nlp = StanfordCoreNLP(r'/Users/zhangruiqi/Downloads/Learning/MachineLearning/stanford-corenlp-full-2018-10-05', lang = 'zh')
+
 
 class Sentence(object):
 	WORD_TOKENIZER = MyTokenizer()
 
 	ASP_EXTRACTOR = SentenceAspectExtractor()
+	ABAE_EXTRACTOR = ABAEAspectExtractor()
 
 	def __init__(self, raw, review=None):
 		self.raw = raw #string
@@ -24,7 +29,8 @@ class Sentence(object):
 		return self.raw
 
 	def word_tokenize(self, raw):
-		return Sentence.WORD_TOKENIZER.tokenize(raw)
+		# print(type(raw)) 
+		return Sentence.WORD_TOKENIZER.tokenize(raw) #type(raw) = <class 'str'>
 
 	def pos_tag(self, tokenized_sent):
 		POS_sent = []
@@ -35,6 +41,7 @@ class Sentence(object):
 
 	def compute_aspects(self):
 		return Sentence.ASP_EXTRACTOR.get_sent_aspects(self)
+		# return Sentence.ABAE_EXTRACTOR.get_sent_aspects(self)
 
 	def has_aspect(self, asp_string):
 		asp_toks = asp_string.split(" ")
@@ -45,6 +52,15 @@ class Sentence(object):
 				'user': self.review.user_id
 				}
 
+if __name__ == '__main__':
+	samples = (
+		# "What if it's English.",
+		"现在正在测试中文分词?",
+		"如果是乱码呢？&……%¥"
+		)
+	for s in samples:
+		sent = Sentence(s, None)
+		print(sent.pos_tagged)
 
 
 
