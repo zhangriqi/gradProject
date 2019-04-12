@@ -14,7 +14,7 @@ class W2VEmbReader:
 
     def __init__(self, emb_path, emb_dim=None):
 
-        logger.info('Loading embeddings from: ' + emb_path)
+        logger.info('Loading embeddings from: ' + emb_path )
         self.embeddings = {}
         emb_matrix = []
        

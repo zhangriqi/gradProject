@@ -49,7 +49,7 @@ def create_model(args, maxlen, vocab):
     ### Word embedding and aspect embedding initialization ######
     if args.emb_path:
         from w2vEmbReader import W2VEmbReader as EmbReader
-        emb_reader = EmbReader(args.emb_path, emb_dim=args.emb_dim)
+        emb_reader = EmbReader(args.emb_path , emb_dim=args.emb_dim)
         logger.info('Initializing aspect embedding matrix as centroid of kmean clusters')
         model.get_layer('aspect_emb').W.set_value(emb_reader.get_aspect_matrix(args.aspect_size))
 

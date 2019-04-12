@@ -8,22 +8,29 @@ import pandas as pd
 import jieba
 import ast
 
-def cleanData(domain):
+def cleanData(domain, filename):
     with open('stopwords.txt') as f:
         content = f.readlines()
     stopwords = [x.strip() for x in content]
     # for i in range(len(stopwords)):
     #   stopwords[i] = stopwords[i]
     clean = []
-    fname = './datasets/'+domain+'/train.xlsx'
+    fname = './datasets/'+domain+'/' + filename
     df = pd.read_excel(fname)
+    # df = df.dropna() #remove empty cells
     for line in df['QTYJ']:
         l = []
         seglist = jieba.cut(line, cut_all = False)
         for word in seglist:
+            flag = True
             # wordlist = []
             if (word not in stopwords):
-                l.append(word)
+                for ch in word:
+                    if ord(ch) < 0x4e00 or ord(ch) > 0x9fff:
+                        flag = False
+                        break
+                if flag == True:
+                    l.append(word)
         clean.append(l)
     df['clean'] = clean
     df.to_excel(fname, sheet_name = 'Sheet1')
@@ -63,15 +70,14 @@ def preprocess_test(domain):
     out2 = codecs.open('./preprocessed_data/'+domain+'/test_label.txt', 'w', 'utf-8')
 
     for text, label in zip(f1, f2):
-    	textList = ast.literal_eval(text)
-    	# labelList = ast.literal_eval(label)
-    	# label = label.strip()
-    	tokens = parseSentence(textList)
-    	if len(tokens) > 0:
-        	out1.write(' '.join(tokens) + '\n')
-        	out2.write(label + '\n')
-    	# if domain == 'restaurant' and label not in ['Food', 'Staff', 'Ambience']:
-        #     continue
+        # labelList = ast.literal_eval(label)
+        # label = label.strip()
+        textList = ast.literal_eval(text)
+        tokens = parseSentence(textList)
+        # if len(tokens) > 0:
+        if len(label) != 1:
+            out1.write(' '.join(tokens) + '\n')
+            out2.write(label + '\n')
 
 def preprocess(domain):
     print ('\t'+domain+' train set ...')
@@ -80,7 +86,8 @@ def preprocess(domain):
     preprocess_test(domain)
 
 
-# cleanData('2014-2015')
+# cleanData('2014-2015', 'test.xlsx')
+# cleanData('2014-2015', 'train.xlsx')
 print ('Preprocessing raw review sentences ...')
 preprocess('2014-2015')
 # preprocess('restaurant')

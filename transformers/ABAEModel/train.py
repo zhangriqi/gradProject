@@ -19,12 +19,14 @@ logger = logging.getLogger(__name__)
 parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--out-dir", dest="out_dir_path", type=str, metavar='<str>', required=True, help="The path to the output directory")
 parser.add_argument("-e", "--embdim", dest="emb_dim", type=int, metavar='<int>', default=50, help="Embeddings dimension (default=200)")
-parser.add_argument("-b", "--batch-size", dest="batch_size", type=int, metavar='<int>', default=9, help="Batch size (default=50)")
+parser.add_argument("-b", "--batch-size", dest="batch_size", type=int, metavar='<int>', default=40, help="Batch size (default=40)")
+# parser.add_argument("-b", "--batch-size", dest="batch_size", type=int, metavar='<int>', default=9, help="Batch size (default=40)")
 parser.add_argument("-v", "--vocab-size", dest="vocab_size", type=int, metavar='<int>', default=9000, help="Vocab size. '0' means no limit (default=9000)")
-parser.add_argument("-as", "--aspect-size", dest="aspect_size", type=int, metavar='<int>', default=14, help="The number of aspects specified by users (default=14)")
+parser.add_argument("-as", "--aspect-size", dest="aspect_size", type=int, metavar='<int>', default=7, help="The number of aspects specified by users (default=14)")
 parser.add_argument("--emb", dest="emb_path", type=str, metavar='<str>', help="The path to the word embeddings file")
 parser.add_argument("--epochs", dest="epochs", type=int, metavar='<int>', default=15, help="Number of epochs (default=15)")
-parser.add_argument("-n", "--neg-size", dest="neg_size", type=int, metavar='<int>', default=9, help="Number of negative instances (default=20)")
+parser.add_argument("-n", "--neg-size", dest="neg_size", type=int, metavar='<int>', default=40, help="Number of negative instances (default=40)")
+# parser.add_argument("-n", "--neg-size", dest="neg_size", type=int, metavar='<int>', default=9, help="Number of negative instances (default=40)")
 parser.add_argument("--maxlen", dest="maxlen", type=int, metavar='<int>', default=0, help="Maximum allowed number of words during training. '0' means no limit (default=0)")
 parser.add_argument("--seed", dest="seed", type=int, metavar='<int>', default=1234, help="Random seed (default=1234)")
 parser.add_argument("-a", "--algorithm", dest="algorithm", type=str, metavar='<str>', default='adam', help="Optimization algorithm (rmsprop|sgd|adagrad|adadelta|adam|adamax) (default=adam)")
@@ -37,7 +39,7 @@ U.mkdir_p(out_dir)
 U.print_args(args)
 
 assert args.algorithm in {'rmsprop', 'sgd', 'adagrad', 'adadelta', 'adam', 'adamax'}
-assert args.domain in {'2014-2015'}
+assert args.domain in {'2014-2015','beer','restaurant'}
 # assert args.domain in {'restaurant'}
 
 
@@ -77,7 +79,7 @@ def sentence_batch_generator(data, batch_size):
 def negative_batch_generator(data, batch_size, neg_size):
     data_len = data.shape[0]
     dim = data.shape[1]
-    print(data_len, dim)
+    # print(data_len, dim)
     while True:
         indices = np.random.choice(data_len, batch_size * neg_size)
         samples = data[indices].reshape(batch_size, neg_size, dim)
@@ -141,8 +143,8 @@ for ii in range(args.epochs):
         sen_input = next(sen_gen)
         neg_input = next(neg_gen)
 
-        print(np.shape([sen_input]), np.shape(neg_input))
-        print(np.shape(np.ones((args.batch_size, 1))))
+        # print(np.shape([sen_input]), np.shape(neg_input))
+        # print(np.shape(np.ones((args.batch_size, 1))))
         # print(type(sen_input), type(neg_input))
 
         sample_count = np.shape([sen_input])[1]
@@ -156,7 +158,7 @@ for ii in range(args.epochs):
 
     if loss < min_loss:
         min_loss = loss
-        print('model.summary: ', model.summary())
+        # print('model.summary: ', model.summary())
         word_emb = model.get_layer('word_emb').embeddings.get_value()
         # print('aspect_emb.output: ', model.get_layer('aspect_emb').output)
         aspect_emb = model.get_layer('aspect_emb').W.get_value()
@@ -171,8 +173,8 @@ for ii in range(args.epochs):
             sims = word_emb.dot(desc.T)
             ordered_words = np.argsort(sims)[::-1]
             desc_list = [vocab_inv[w] for w in ordered_words[:100]]
-            print ('Aspect %d:' % ind)
-            print (desc_list)
+            # print ('Aspect %d:' % ind)
+            # print (desc_list)
             aspect_file.write('Aspect %d:\n' % ind)
             aspect_file.write(' '.join(desc_list) + '\n\n')
 

@@ -36,8 +36,8 @@ def create_vocab(domain, maxlen=0, vocab_size=0):
     print ('   %i total words, %i unique words' % (total_words, unique_words))
     sorted_word_freqs = sorted(word_freqs.items(), key=operator.itemgetter(1), reverse=True)
 
-    # vocab = {'<pad>':0, '<unk>':1, '<num>':2}
-    vocab = {}
+    vocab = {'<pad>':0, '<unk>':1, '<num>':2}
+    # vocab = {}
     index = len(vocab)
     for word, _ in sorted_word_freqs:
         vocab[word] = index
